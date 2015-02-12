@@ -83,7 +83,7 @@ format :
 # trailing _.
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 GMOCK_SRCS_ = $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
-ARDUINO_MOCK_SRCS_ = $(ARDUINO_MOCK_DIR)/src/*.cc $(ARDUINO_MOCK_HEADERS)
+ARDUINO_MOCK_SRCS_ = $(ARDUINO_MOCK_DIR)/src/*.cpp $(ARDUINO_MOCK_HEADERS)
 
 # For simplicity and to avoid depending on implementation details of
 # Google Mock and Google Test, the dependencies specified below are
@@ -111,7 +111,7 @@ gmock_main.a : gmock-all.o gtest-all.o gmock_main.o
 # Builds Arduino mocks.
 ArduinoMockAll.o : $(ARDUINO_MOCK_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(ARDUINO_MOCK_DIR) $(CXXFLAGS) -c \
-		$(ARDUINO_MOCK_DIR)/src/ArduinoMockAll.cc
+		$(ARDUINO_MOCK_DIR)/src/ArduinoMockAll.cpp
 
 arduino_mock_all.a : ArduinoMockAll.o
 	$(AR) $(ARFLAGS) $@ $^
