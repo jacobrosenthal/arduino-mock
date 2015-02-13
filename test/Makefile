@@ -34,7 +34,10 @@ TEST_DIR = .
 # Set Google Test's header directory as a system directory, such that
 # the compiler doesn't generate warnings in Google Test headers.
 CPPFLAGS += -isystem $(GTEST_DIR)/include -isystem $(GMOCK_DIR)/include \
-		-I$(ARDUINO_MOCK_DIR)/include/arduino-mock
+		-I$(ARDUINO_MOCK_DIR)/include/arduino-mock \
+		-I$(ARDUINO_MOCK_DIR)/arduino-1.6.0/hardware/arduino/avr/variants/standard \
+		-I$(ARDUINO_MOCK_DIR)/arduino-1.6.0/hardware/arduino/avr/cores/arduino \
+		-I$(ARDUINO_MOCK_DIR)/arduino-1.6.0/hardware/tools/avr/avr/include
 
 # Flags passed to the C++ compiler.
 CXXFLAGS += -g -Wall -Wextra -pthread \
@@ -62,6 +65,8 @@ GMOCK_HEADERS = $(GMOCK_DIR)/include/gmock/*.h \
 # Arduino Mock headers.
 # Usually you shouldn't change this definition.
 ARDUINO_MOCK_HEADERS = $(ARDUINO_MOCK_DIR)/include/arduino-mock/*.h
+ARDUINO_SRC_HEADERS = $(ARDUINO_MOCK_DIR)/arduino-1.6.0/hardware/arduino/avr/variants/standard/*.h \
+		$(ARDUINO_MOCK_DIR)/arduino-1.6.0/hardware/arduino/avr/cores/arduino/*.h
 
 # House-keeping build targets.
 
@@ -84,6 +89,7 @@ format :
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 GMOCK_SRCS_ = $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
 ARDUINO_MOCK_SRCS_ = $(ARDUINO_MOCK_DIR)/src/*.cpp $(ARDUINO_MOCK_HEADERS)
+ARDUINO_SRCS_ = $(ARDUINO_MOCK_DIR)/arduino-1.6.0/hardware/arduino/avr/cores/arduino/*.cpp $(ARDUINO_SRC_HEADERS)
 
 # For simplicity and to avoid depending on implementation details of
 # Google Mock and Google Test, the dependencies specified below are
@@ -108,12 +114,20 @@ gmock.a : gmock-all.o gtest-all.o
 gmock_main.a : gmock-all.o gtest-all.o gmock_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
-# Builds Arduino mocks.
+# # Builds Arduino mocks.
 ArduinoMockAll.o : $(ARDUINO_MOCK_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(ARDUINO_MOCK_DIR) $(CXXFLAGS) -c \
 		$(ARDUINO_MOCK_DIR)/src/ArduinoMockAll.cpp
 
 arduino_mock_all.a : ArduinoMockAll.o
+	$(AR) $(ARFLAGS) $@ $^
+
+# Builds Arduino mocks.
+ArduinoSrcAll.o : $(ARDUINO_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(ARDUINO_MOCK_DIR) $(CXXFLAGS) -c \
+		$(ARDUINO_MOCK_DIR)/src/ArduinoSrcAll.cpp
+
+arduino_src_all.a : ArduinoSrcAll.o
 	$(AR) $(ARFLAGS) $@ $^
 
 # Builds a test.  A test should link with either gtest.a or
@@ -126,6 +140,7 @@ Serial_unittest.o : $(TEST_DIR)/Serial_unittest.cc \
 
 Serial_unittest : Serial_unittest.o \
 				gmock_main.a  \
+				arduino_src_all.a \
 				arduino_mock_all.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
@@ -135,6 +150,7 @@ serialHelper_unittest.o : $(TEST_DIR)/serialHelper_unittest.cc \
 
 serialHelper_unittest : serialHelper_unittest.o \
 				gmock_main.a  \
+				arduino_src_all.a \
 				arduino_mock_all.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
@@ -144,6 +160,7 @@ Spark_unittest.o : $(TEST_DIR)/Spark_unittest.cc \
 
 Spark_unittest : Spark_unittest.o \
 				gmock_main.a  \
+				arduino_src_all.a \
 				arduino_mock_all.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
@@ -153,6 +170,7 @@ Arduino_unittest.o : $(TEST_DIR)/Arduino_unittest.cc \
 
 Arduino_unittest : Arduino_unittest.o \
 				gmock_main.a  \
+				arduino_src_all.a \
 				arduino_mock_all.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
@@ -162,6 +180,7 @@ EEPROM_unittest.o : $(TEST_DIR)/EEPROM_unittest.cc \
 
 EEPROM_unittest : EEPROM_unittest.o \
 				gmock_main.a  \
+				arduino_src_all.a \
 				arduino_mock_all.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
@@ -171,6 +190,7 @@ Wire_unittest.o : $(TEST_DIR)/Wire_unittest.cc \
 
 Wire_unittest : Wire_unittest.o \
 				gmock_main.a  \
+				arduino_src_all.a \
 				arduino_mock_all.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
 
@@ -180,5 +200,6 @@ WiFi_unittest.o : $(TEST_DIR)/WiFi_unittest.cc \
 
 WiFi_unittest : WiFi_unittest.o \
 				gmock_main.a  \
+				arduino_src_all.a \
 				arduino_mock_all.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
