@@ -7,12 +7,14 @@
 #include <stdint.h>
 #include <gmock/gmock.h>
 
+#include "HardwareSerial.h"
+
 #define DEC 10
 #define HEX 16
 #define OCT 8
 #define BIN 2
 
-class SerialMock {
+class SerialMock : HardwareSerial{
   public:
     MOCK_METHOD0(getWriteError, int());
     MOCK_METHOD0(clearWriteError, void());
@@ -36,8 +38,8 @@ class SerialMock {
 
     MOCK_METHOD1(begin, uint8_t(uint16_t));
 
-    MOCK_METHOD0(available, uint8_t());
-    MOCK_METHOD0(read, uint8_t());
+    MOCK_METHOD0(available, int());
+    MOCK_METHOD0(read, int());
 
     MOCK_METHOD0(flush, void());
 
@@ -50,7 +52,7 @@ class SerialMock {
     */
 };
 
-class Serial_ {
+class Serial_ : public HardwareSerial{
   public:
     static size_t print(const char[]);
     static size_t print(char);
@@ -77,10 +79,10 @@ class Serial_ {
 
     uint8_t begin(uint32_t);
 
-    uint8_t available();
-    uint8_t read();
+    int available();
+    int read();
 
-    static void flush();
+    void flush();
 
     /*
     TODO: Not implemented yet.

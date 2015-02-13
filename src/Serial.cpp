@@ -105,11 +105,11 @@ void Serial_::flush() {
   return gSerialMock->flush();
 }
 
-uint8_t Serial_::available() {
+int Serial_::available() {
   return gSerialMock->available();
 }
 
-uint8_t Serial_::read() {
+int Serial_::read() {
   return gSerialMock->read();
 }
 
