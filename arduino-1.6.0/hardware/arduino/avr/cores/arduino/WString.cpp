@@ -21,6 +21,26 @@
 
 #include "WString.h"
 
+char * ltoa (long, char *s, int){
+	return s;
+}
+ 
+char * utoa (unsigned int, char *s, int){
+	return s;
+}
+ 
+char * ultoa (unsigned long, char *s, int){
+	return s;
+}
+ 
+char * itoa (int, char *s, int){
+	return s;
+}
+ 
+char * 	dtostrf (double, signed char, unsigned char, char *s){
+	return s;
+}
+
 /*********************************************/
 /*  Constructors                             */
 /*********************************************/
